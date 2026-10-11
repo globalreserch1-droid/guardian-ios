@@ -1,0 +1,60 @@
+name: iOS build (unsigned)
+
+# Builds the Guardian iOS wrapper on a free GitHub macOS runner.
+# Produces an UNSIGNED .ipa — Eli signs it on his own desktop with his
+# free Apple ID (Sideloadly/AltStore) for testing. No Apple Developer
+# account, certificates, or provisioning profiles are used or needed here.
+#
+# Repo layout expected: this workflow lives at .github/workflows/ios-build.yml
+# in the guardian-ios repo, with app/Guardian.xcodeproj next to it and the
+# PWA snapshot in pwa/ (scripts/copy-web-assets.sh prefers a live
+# ../guardian-pwa checkout for local dev, falls back to pwa/ on CI).
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Stage web assets (API base + version injection)
+        run: bash scripts/copy-web-assets.sh
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Build (unsigned, no signing)
+        run: |
+          xcodebuild \
+            -project app/Guardian.xcodeproj \
+            -scheme Guardian \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build/derived \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            build
+
+      - name: Package unsigned IPA
+        run: |
+          APP_PATH="$(find build/derived -name 'Guardian.app' -type d | head -1)"
+          test -n "$APP_PATH" || { echo "Guardian.app not found"; exit 1; }
+          rm -rf Payload Guardian-unsigned.ipa
+          mkdir Payload
+          cp -R "$APP_PATH" Payload/
+          zip -r -y Guardian-unsigned.ipa Payload
+          unzip -l Guardian-unsigned.ipa | head -20
+
+      - name: Upload unsigned IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: Guardian-unsigned-ipa
+          path: Guardian-unsigned.ipa
+          if-no-files-found: error

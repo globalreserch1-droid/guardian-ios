@@ -1,0 +1,153 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0D67ABF78E025513AFDBC53D /* www */ = {isa = PBXBuildFile; fileRef = C16B387FDE375812B87A01A0 /* www */; };
+		132ECABDCA6D5C389DAEEE19 /* ViewController.swift */ = {isa = PBXBuildFile; fileRef = E11FB4ADFCF0536E9D884C53 /* ViewController.swift */; };
+		1BF9BB290C33555B8CE87657 /* WebKit.framework */ = {isa = PBXBuildFile; fileRef = 7B9F6400E7F05942804B8904 /* WebKit.framework */; };
+		304B5F1F1C015D76BC08FCAE /* MessageUI.framework */ = {isa = PBXBuildFile; fileRef = 597912D70AA25CA98A0C9C95 /* MessageUI.framework */; };
+		4D948D809102524A8ECF202D /* CoreLocation.framework */ = {isa = PBXBuildFile; fileRef = 8E773B5709485ECCB4AAE4FC /* CoreLocation.framework */; };
+		51F55A37CB36572CA2F024C4 /* Assets.xcassets */ = {isa = PBXBuildFile; fileRef = 5D63C231AB8158F1BAB4B253 /* Assets.xcassets */; };
+		9D964BB1942E52F895032C33 /* AppDelegate.swift */ = {isa = PBXBuildFile; fileRef = 5BD83FC91DB9542BB29188D2 /* AppDelegate.swift */; };
+		EAFE6EE36EAD5310B68712CF /* UserNotifications.framework */ = {isa = PBXBuildFile; fileRef = 28A79D5781515360A1B3A9E7 /* UserNotifications.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		28A79D5781515360A1B3A9E7 /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = "System/Library/Frameworks/UserNotifications.framework"; sourceTree = SDKROOT; };
+		597912D70AA25CA98A0C9C95 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = "System/Library/Frameworks/MessageUI.framework"; sourceTree = SDKROOT; };
+		5BD83FC91DB9542BB29188D2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		5D63C231AB8158F1BAB4B253 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		7B9F6400E7F05942804B8904 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = "System/Library/Frameworks/WebKit.framework"; sourceTree = SDKROOT; };
+		8E773B5709485ECCB4AAE4FC /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = "System/Library/Frameworks/CoreLocation.framework"; sourceTree = SDKROOT; };
+		B65E2BBC63CC581CA97B24A5 /* Guardian.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Guardian.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C16B387FDE375812B87A01A0 /* www */ = {isa = PBXFileReference; lastKnownFileType = folder; path = www; sourceTree = "<group>"; };
+		E11FB4ADFCF0536E9D884C53 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		FB373282DED25962943F7907 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		DC3398952B235784A1C82365 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (
+			1BF9BB290C33555B8CE87657 /* WebKit.framework in Frameworks */,
+			4D948D809102524A8ECF202D /* CoreLocation.framework in Frameworks */,
+			304B5F1F1C015D76BC08FCAE /* MessageUI.framework in Frameworks */,
+			EAFE6EE36EAD5310B68712CF /* UserNotifications.framework in Frameworks */,
+		); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0AB550AEF4405A7EA2BC295B = {isa = PBXGroup; children = (
+			644C7BA4794450499DFC1577 /* Guardian */,
+			A5C3AF68C6DF5869BF628CF6 /* Products */,
+		); sourceTree = "<group>"; };
+		644C7BA4794450499DFC1577 /* Guardian */ = {isa = PBXGroup; children = (
+			5BD83FC91DB9542BB29188D2 /* AppDelegate.swift */,
+			E11FB4ADFCF0536E9D884C53 /* ViewController.swift */,
+			FB373282DED25962943F7907 /* Info.plist */,
+			5D63C231AB8158F1BAB4B253 /* Assets.xcassets */,
+			C16B387FDE375812B87A01A0 /* www */,
+		); path = Guardian; sourceTree = "<group>"; };
+		A5C3AF68C6DF5869BF628CF6 /* Products */ = {isa = PBXGroup; children = (
+			B65E2BBC63CC581CA97B24A5 /* Guardian.app */,
+		); name = Products; sourceTree = "<group>"; };
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		3CAB8E6907425FC886206B80 /* Guardian */ = {isa = PBXNativeTarget; buildConfigurationList = CED155DC180A5287A4128C76 /* Build configuration list for PBXNativeTarget "Guardian" */; buildPhases = (
+			ED9E00DB450C5614A2F4B5EA /* Sources */,
+			DC3398952B235784A1C82365 /* Frameworks */,
+			D9FD15C5F4735A96ABDEAE7B /* Resources */,
+		); buildRules = (
+		); dependencies = (
+		); name = Guardian; productName = Guardian; productReference = B65E2BBC63CC581CA97B24A5 /* Guardian.app */; productType = "com.apple.product-type.application"; };
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		AD25BE4D4173567F953734F8 /* Project object */ = {isa = PBXProject; attributes = { LastUpgradeCheck = 1600; }; buildConfigurationList = BBF4258F8A1955659E1423D5 /* Build configuration list for PBXProject "Guardian" */; compatibilityVersion = "Xcode 14.0"; developmentRegion = en; hasScannedForEncodings = 0; knownRegions = (en, ); mainGroup = 0AB550AEF4405A7EA2BC295B; productRefGroup = A5C3AF68C6DF5869BF628CF6 /* Products */; projectDirPath = ""; projectRoot = ""; targets = (
+			3CAB8E6907425FC886206B80 /* Guardian */,
+		); };
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		D9FD15C5F4735A96ABDEAE7B /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (
+			51F55A37CB36572CA2F024C4 /* Assets.xcassets in Resources */,
+			0D67ABF78E025513AFDBC53D /* www in Resources */,
+		); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		ED9E00DB450C5614A2F4B5EA /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (
+			9D964BB1942E52F895032C33 /* AppDelegate.swift in Sources */,
+			132ECABDCA6D5C389DAEEE19 /* ViewController.swift in Sources */,
+		); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1B26D13FF829550BAFF80451 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ONLY_ACTIVE_ARCH = NO;
+			}; name = Release; };
+		30DE94C05F8C59F1B249441B /* Release */ = {isa = XCBuildConfiguration; buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Manual;
+				INFOPLIST_FILE = Guardian/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.blanketguard.guardian;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ONLY_ACTIVE_ARCH = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			}; name = Release; };
+		7898AE47B1FE5933AD6AF407 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ONLY_ACTIVE_ARCH = YES;
+			}; name = Debug; };
+		98B6E98FEA185ABEB319CE58 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Manual;
+				INFOPLIST_FILE = Guardian/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.blanketguard.guardian;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ONLY_ACTIVE_ARCH = YES;
+			}; name = Debug; };
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		BBF4258F8A1955659E1423D5 /* Build configuration list for PBXProject "Guardian" */ = {isa = XCConfigurationList; buildConfigurations = (
+			7898AE47B1FE5933AD6AF407 /* Debug */,
+			1B26D13FF829550BAFF80451 /* Release */,
+		); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		CED155DC180A5287A4128C76 /* Build configuration list for PBXNativeTarget "Guardian" */ = {isa = XCConfigurationList; buildConfigurations = (
+			98B6E98FEA185ABEB319CE58 /* Debug */,
+			30DE94C05F8C59F1B249441B /* Release */,
+		); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+/* End XCConfigurationList section */
+	};
+	rootObject = AD25BE4D4173567F953734F8 /* Project object */;
+}

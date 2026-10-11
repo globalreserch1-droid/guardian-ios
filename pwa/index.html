@@ -1,0 +1,1494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0A1930">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Guardian">
+<title>Guardian — Senior Protection</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<style>
+  :root {
+    --navy: #0A1930;
+    --navy-2: #10294f;
+    --cyan: #00D9A5;
+    --yellow: #E8FF47;
+    --red: #E60012;
+    --white: #FFFFFF;
+    --muted: #8FA3C0;
+    --card: #132c52;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html { font-size: 18px; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--navy);
+    color: var(--white);
+    min-height: 100dvh;
+    display: flex;
+    justify-content: center;
+  }
+  #app { width: 100%; max-width: 480px; min-height: 100dvh; display: flex; flex-direction: column; padding: 24px 20px calc(24px + env(safe-area-inset-bottom)); }
+  .screen { display: none; flex-direction: column; gap: 20px; flex: 1; }
+  .screen.active { display: flex; }
+
+  .brand { text-align: center; margin-top: 12px; }
+  .brand .logo { width: 84px; height: 84px; margin: 0 auto 12px; }
+  .brand h1 { font-size: 1.9rem; letter-spacing: 2px; }
+  .brand p { color: var(--muted); font-size: 1rem; margin-top: 6px; }
+
+  .card {
+    background: var(--card);
+    border: 1px solid rgba(0,217,165,.25);
+    border-radius: 18px;
+    padding: 22px;
+  }
+  label { display: block; font-size: 1rem; color: var(--muted); margin-bottom: 8px; }
+  input[type="text"], input[type="tel"], input[type="url"] {
+    width: 100%;
+    font-size: 1.35rem;
+    padding: 16px;
+    border-radius: 14px;
+    border: 2px solid rgba(255,255,255,.15);
+    background: var(--navy-2);
+    color: var(--white);
+    letter-spacing: 2px;
+    text-align: center;
+    outline: none;
+  }
+  input:focus { border-color: var(--cyan); }
+  .field { margin-bottom: 18px; }
+  .hint { font-size: .85rem; color: var(--muted); text-align: center; margin-top: 8px; }
+
+  .btn {
+    display: block; width: 100%;
+    font-size: 1.25rem; font-weight: 700;
+    padding: 18px; border: none; border-radius: 16px;
+    cursor: pointer; text-align: center;
+  }
+  .btn-primary { background: var(--cyan); color: #04120c; }
+  .btn-primary:active { transform: scale(.98); }
+  .btn-ghost { background: transparent; color: var(--muted); border: 1px solid rgba(255,255,255,.2); font-size: 1rem; padding: 14px; }
+  .btn-sos {
+    background: var(--red); color: #fff;
+    font-size: 1.6rem; padding: 26px; border-radius: 20px;
+    box-shadow: 0 0 0 6px rgba(230,0,18,.18);
+  }
+  .btn-sos:active { transform: scale(.97); }
+  .btn:disabled { opacity: .5; }
+
+  .error { background: rgba(230,0,18,.15); border: 1px solid var(--red); color: #ffb3b9; padding: 14px; border-radius: 12px; font-size: 1rem; text-align: center; display: none; }
+  .error.show { display: block; }
+
+  details.settings { border: 1px solid rgba(255,255,255,.12); border-radius: 12px; padding: 12px 16px; }
+  details.settings summary { cursor: pointer; color: var(--muted); font-size: .95rem; }
+  details.settings input { font-size: 1rem; letter-spacing: 0; text-align: left; margin-top: 10px; padding: 12px; }
+
+  /* Dashboard */
+  .status-hero { text-align: center; padding: 28px 16px; background: linear-gradient(160deg, #0d3a2c, var(--navy-2)); border: 2px solid var(--cyan); border-radius: 22px; }
+  .status-hero .shield { width: 96px; height: 96px; margin: 0 auto 10px; }
+  .status-hero h2 { color: var(--cyan); font-size: 2rem; letter-spacing: 3px; }
+  .status-hero p { color: var(--muted); margin-top: 6px; font-size: 1rem; }
+  .guardian-num { text-align: center; }
+  .guardian-num .num { font-size: 2rem; font-weight: 800; letter-spacing: 4px; color: var(--yellow); }
+  .guardian-num .lbl { color: var(--muted); font-size: .9rem; margin-bottom: 4px; }
+
+  .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .tile {
+    background: var(--card); border: 1px solid rgba(255,255,255,.1);
+    border-radius: 16px; padding: 18px 14px; text-align: center; cursor: pointer;
+    min-height: 132px; display: flex; flex-direction: column; justify-content: center; gap: 8px;
+  }
+  .tile .icon { font-size: 2rem; }
+  .tile .t { font-weight: 700; font-size: 1.02rem; }
+  .tile .s { font-size: .85rem; color: var(--muted); word-break: break-word; }
+  .tile .s.on { color: var(--cyan); font-weight: 700; }
+  .tile .s.soon { color: var(--yellow); }
+
+  .contact-card { display: flex; align-items: center; gap: 16px; }
+  .contact-card .avatar { width: 60px; height: 60px; border-radius: 50%; background: var(--cyan); color: #04120c; font-size: 1.8rem; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .contact-card .info .n { font-weight: 700; font-size: 1.15rem; }
+  .contact-card .info .r { color: var(--muted); font-size: .95rem; }
+
+  .sos-confirm { text-align: center; padding: 20px; background: rgba(230,0,18,.12); border: 2px solid var(--red); border-radius: 18px; display: none; }
+  .sos-confirm.show { display: block; }
+  .sos-confirm h3 { color: #ff8a93; font-size: 1.4rem; margin-bottom: 8px; }
+  .sos-confirm p { color: var(--muted); }
+
+  /* Self-updater */
+  .update-banner { display: none; background: #2b2503; border: 3px solid var(--yellow); border-radius: 18px; padding: 20px 16px; margin-bottom: 16px; text-align: center; }
+  .update-banner.show { display: block; }
+  .update-banner .t { color: var(--yellow); font-size: 1.35rem; font-weight: 800; }
+  .update-banner .s { color: var(--white); font-size: 1.05rem; margin-top: 8px; line-height: 1.6; }
+  .btn-update { background: var(--yellow); color: #231f00; font-size: 1.3rem; font-weight: 800; padding: 18px; margin-top: 14px; }
+  .btn-update:active { transform: scale(.98); }
+  .check-updates { display: block; margin: 18px auto 4px; background: none; border: none; color: var(--muted); font-size: 1rem; text-decoration: underline; cursor: pointer; padding: 10px; }
+  .update-status { text-align: center; color: var(--muted); font-size: .95rem; min-height: 1.4em; padding: 0 16px 6px; line-height: 1.5; }
+  .update-status.good { color: var(--cyan); }
+  .app-version { text-align: center; color: var(--muted); font-size: .85rem; padding-bottom: 8px; }
+
+  footer { text-align: center; color: var(--muted); font-size: .8rem; margin-top: auto; padding-top: 24px; }
+  .signout { margin-top: 8px; }
+
+  /* Health & Medications screens */
+  .card h2 { font-size: 1.5rem; margin-bottom: 6px; }
+  .card h3 { font-size: 1.25rem; margin-bottom: 12px; }
+  .plain { color: var(--muted); font-size: 1rem; }
+  .btn + .btn { margin-top: 10px; }
+  .btn-danger { background: transparent; color: #ff8a93; border: 2px solid var(--red); font-size: 1.1rem; padding: 14px; }
+  input.left { text-align: left; letter-spacing: 0; font-size: 1.15rem; }
+  .item { background: var(--navy-2); border: 1px solid rgba(255,255,255,.12); border-radius: 14px; padding: 16px; margin-bottom: 10px; cursor: pointer; }
+  .item .n { font-size: 1.2rem; font-weight: 700; }
+  .item .d { color: var(--muted); font-size: 1rem; margin-top: 4px; }
+  .item .t { color: var(--cyan); font-size: .95rem; margin-top: 4px; font-weight: 700; }
+  .empty { color: var(--muted); text-align: center; padding: 12px; font-size: 1rem; }
+  .chips { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .chip { font-size: 1.1rem; padding: 16px 8px; border-radius: 14px; border: 2px solid rgba(255,255,255,.2); background: var(--navy-2); color: var(--white); cursor: pointer; }
+  .chip.sel { border-color: var(--cyan); background: rgba(0,217,165,.18); font-weight: 700; }
+  .del-confirm { background: rgba(230,0,18,.12); border: 2px solid var(--red); border-radius: 14px; padding: 18px; margin-top: 12px; text-align: center; }
+  .del-confirm p { font-size: 1.2rem; margin-bottom: 14px; }
+
+  /* Emergency Tag */
+  .tile.wide { grid-column: 1 / -1; background: var(--red); border-color: var(--red); min-height: 0; padding: 16px 14px; }
+  .tile.wide .t { color: #fff; }
+  .tile.wide .s { color: #ffd9dc; }
+  .emtag-header { background: var(--red); color: #fff; border-radius: 18px; padding: 22px 16px; text-align: center; }
+  .emtag-header h2 { font-size: 1.45rem; letter-spacing: 1px; line-height: 1.4; }
+  .emtag-body { background: #fff; color: #111; border-radius: 18px; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+  .emtag-label { font-size: .95rem; font-weight: 800; letter-spacing: 2px; color: #666; margin-bottom: 4px; }
+  .emtag-section.alert .emtag-label { color: var(--red); }
+  .emtag-big { font-size: 1.9rem; font-weight: 800; }
+  .emtag-num { font-size: 1.5rem; font-weight: 800; letter-spacing: 2px; }
+  .emtag-list { font-size: 1.25rem; line-height: 1.65; font-weight: 600; }
+  .emtag-body a { color: #0b5fff; font-weight: 800; }
+</style>
+<style id="wcard-css">
+  /* Wallet card: exact credit-card size. Emergency red + yellow.
+     Grayscale-safe: dark text on yellow, light text on red. */
+  .wcard { width: 3.375in; height: 2.125in; border: 0.025in solid #cc0000; background: #fff; color: #000;
+    font-family: Arial, Helvetica, sans-serif; box-sizing: border-box; padding: 0.1in 0.14in; overflow: hidden; }
+  .wcard.back { margin-top: 0.25in; }
+  .wc-header { background: #cc0000; color: #ffe600; font-weight: bold; font-size: 11pt; letter-spacing: 2px;
+    text-align: center; margin: -0.1in -0.14in 0.06in -0.14in; padding: 0.05in 0;
+    print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .wc-name { font-size: 13pt; font-weight: bold; color: #000; }
+  .wc-number { font-size: 16pt; font-weight: bold; letter-spacing: 2px; color: #000; background: #ffd600;
+    margin: 0.03in -0.14in; padding: 0.02in 0.14in;
+    print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .wc-carry { font-size: 9pt; font-weight: bold; letter-spacing: 1px; text-align: center; color: #000;
+    border-top: 0.015in solid #cc0000; border-bottom: 0.015in solid #cc0000;
+    padding: 0.03in 0; margin: 0.04in 0; }
+  .wc-allg-label { font-size: 7pt; font-weight: bold; letter-spacing: 1.5px; margin-top: 0.04in; color: #cc0000; }
+  .wc-allg { font-size: 8.5pt; font-weight: bold; color: #000; border: 0.02in solid #cc0000;
+    padding: 0.03in 0.05in; margin-top: 0.02in; line-height: 1.3; }
+  .wc-backhead { background: #cc0000; color: #ffe600; font-weight: bold; font-size: 8pt; letter-spacing: 1px;
+    margin: -0.1in -0.14in 0.06in -0.14in; padding: 0.04in 0.14in;
+    print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .wc-sec { margin-bottom: 0.06in; }
+  .wc-sec-label { font-size: 6.5pt; font-weight: bold; letter-spacing: 1.5px; color: #cc0000; }
+  .wc-sec-body { font-size: 8pt; line-height: 1.3; color: #000; }
+</style>
+<style>
+  /* Print: only the wallet card prints, the app UI is hidden. */
+  #print-card { display: none; }
+  @media print {
+    body > *:not(#print-card) { display: none !important; }
+    #print-card { display: block !important; }
+  }
+  @page { margin: 0.4in; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ACTIVATION SCREEN -->
+  <section id="screen-activate" class="screen">
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 96 96" aria-hidden="true">
+        <path d="M48 6 L84 20 V48 C84 70 68 86 48 92 C28 86 12 70 12 48 V20 Z" fill="#00D9A5"/>
+        <path d="M34 48 L44 58 L62 38" stroke="#0A1930" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <h1>GUARDIAN</h1>
+      <p>The guard that never sleeps</p>
+    </div>
+
+    <div class="card">
+      <div class="field">
+        <label for="in-number">Guardian number</label>
+        <input id="in-number" type="tel" inputmode="numeric" maxlength="9" placeholder="000000000" autocomplete="off">
+        <div class="hint">9 digits — from your welcome email</div>
+      </div>
+      <div class="field">
+        <label for="in-code">Access code</label>
+        <input id="in-code" type="text" placeholder="••••••••" autocomplete="off" autocapitalize="off" spellcheck="false">
+      </div>
+      <div id="activate-error" class="error"></div>
+      <button id="btn-activate" class="btn btn-primary">Activate Protection</button>
+    </div>
+
+    <details class="settings">
+      <summary>Advanced: API server address</summary>
+      <input id="in-api" type="url" placeholder="https://api.example.com (blank = same server)">
+      <div class="hint">Only change this if your Guardian server lives somewhere else.</div>
+    </details>
+
+    <footer>GUARDIAN by Global Research · $1/month for 100% peace of mind</footer>
+  </section>
+
+  <!-- DASHBOARD SCREEN -->
+  <section id="screen-dashboard" class="screen">
+    <div id="update-banner" class="update-banner">
+      <div class="t" id="update-banner-title">A newer Guardian is ready.</div>
+      <div class="s" id="update-banner-sub"></div>
+      <button id="btn-update" class="btn btn-update">Update now</button>
+    </div>
+    <div class="status-hero">
+      <svg class="shield" viewBox="0 0 96 96" aria-hidden="true">
+        <path d="M48 6 L84 20 V48 C84 70 68 86 48 92 C28 86 12 70 12 48 V20 Z" fill="#00D9A5"/>
+        <path d="M34 48 L44 58 L62 38" stroke="#0A1930" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <h2>PROTECTED</h2>
+      <p id="dash-name">Guardian is watching over you</p>
+    </div>
+
+    <div class="guardian-num">
+      <div class="lbl">YOUR GUARDIAN NUMBER</div>
+      <div class="num" id="dash-number">—</div>
+    </div>
+
+    <div id="sos-confirm" class="sos-confirm">
+      <h3>Guardian alerted</h3>
+      <p>Your guardian has been notified. Help is on the way. Stay calm.</p>
+    </div>
+    <button id="btn-sos" class="btn btn-sos">🆘 SOS — ALERT MY GUARDIAN</button>
+
+    <div class="tiles">
+      <div class="tile" id="tile-scam">
+        <div class="icon">📵</div>
+        <div class="t">Scam Call Blocking</div>
+        <div class="s on">● ON</div>
+      </div>
+      <div class="tile" id="tile-gps">
+        <div class="icon">📍</div>
+        <div class="t">My Location</div>
+        <div class="s" id="gps-status">Tap to share location</div>
+      </div>
+      <div class="tile" id="tile-health">
+        <div class="icon">❤️</div>
+        <div class="t">Health Info</div>
+        <div class="s" id="health-status">Tap to add info</div>
+      </div>
+      <div class="tile" id="tile-meds">
+        <div class="icon">💊</div>
+        <div class="t">Medications</div>
+        <div class="s" id="meds-status">Tap to add info</div>
+      </div>
+      <div class="tile wide" id="tile-emtag">
+        <div class="icon">🚨</div>
+        <div class="t">Emergency Tag</div>
+        <div class="s">Show in an emergency</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="contact-card">
+        <div class="avatar" id="guardian-avatar">?</div>
+        <div class="info">
+          <div class="n" id="guardian-name">Your guardian</div>
+          <div class="r">Will appear here after verification</div>
+        </div>
+      </div>
+    </div>
+
+    <button id="btn-signout" class="btn btn-ghost signout">Sign out of this device</button>
+    <button id="btn-check-updates" class="check-updates">Check for updates</button>
+    <div id="update-status" class="update-status"></div>
+    <div class="app-version" id="app-version"></div>
+    <footer>GUARDIAN by Global Research · In an emergency always call your local emergency number</footer>
+  </section>
+
+  <!-- HEALTH INFO SCREEN -->
+  <section id="screen-health" class="screen">
+    <div class="card">
+      <h2>❤️ My Health Info</h2>
+      <p class="plain">This stays on your phone. Only you see it.</p>
+    </div>
+
+    <div class="card">
+      <h3>My conditions</h3>
+      <div id="conditions-list"></div>
+      <button id="btn-add-condition" class="btn btn-primary" style="margin-top:6px">+ Add a condition</button>
+    </div>
+
+    <div class="card">
+      <h3>My allergies</h3>
+      <div id="allergies-list"></div>
+      <button id="btn-add-allergy" class="btn btn-primary" style="margin-top:6px">+ Add an allergy</button>
+    </div>
+
+    <div class="card">
+      <h3>My doctor</h3>
+      <div class="field">
+        <label for="doc-name">Doctor's name</label>
+        <input id="doc-name" class="left" type="text" placeholder="Dr. Smith" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="doc-contact">Doctor's email or phone number</label>
+        <input id="doc-contact" class="left" type="text" placeholder="dr.smith@clinic.com" autocomplete="off" autocapitalize="off" spellcheck="false">
+      </div>
+      <button id="btn-save-doctor" class="btn btn-primary">Save doctor</button>
+      <div id="doctor-saved" class="hint" style="display:none;color:var(--cyan);font-weight:700;">Saved ✓</div>
+    </div>
+
+    <div class="card">
+      <h3>Emergency contact</h3>
+      <p class="plain">Who should be called if you can't answer.</p>
+      <div class="field">
+        <label for="ec-name">Name</label>
+        <input id="ec-name" class="left" type="text" placeholder="Sarah (daughter)" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="ec-phone">Phone number</label>
+        <input id="ec-phone" class="left" type="tel" placeholder="516-555-0100" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="ec-email">Email (optional)</label>
+        <input id="ec-email" class="left" type="email" placeholder="For email alerts" autocomplete="off">
+      </div>
+      <button id="btn-save-ec" class="btn btn-primary">Save emergency contact</button>
+      <div id="ec-saved" class="hint" style="display:none;color:var(--cyan);font-weight:700;">Saved ✓</div>
+    </div>
+
+    <div class="card">
+      <h3>Share with my doctor</h3>
+      <p class="plain">Sends your conditions, allergies and medications to your doctor. One tap.</p>
+      <button id="btn-send-doctor" class="btn btn-primary" style="background:var(--yellow);color:#0a1628;margin-top:12px;">✉️ Send my health info to my doctor</button>
+      <button id="btn-send-doctor-sms" class="btn btn-ghost">No email app? Send by text instead</button>
+      <div id="doctor-hint" class="error" style="margin-top:10px;"></div>
+    </div>
+
+    <div class="card" id="health-form-card" style="display:none">
+      <h3 id="health-form-title">Add</h3>
+      <div class="field">
+        <label id="health-name-label" for="health-name">Name</label>
+        <input id="health-name" class="left" type="text" placeholder="" autocomplete="off">
+      </div>
+      <div class="field">
+        <label id="health-note-label" for="health-note">Note</label>
+        <input id="health-note" class="left" type="text" placeholder="Optional" autocomplete="off">
+      </div>
+      <div id="health-form-buttons">
+        <button id="health-save" class="btn btn-primary">Save</button>
+        <button id="health-delete" class="btn btn-danger" style="display:none">Delete</button>
+        <button id="health-cancel" class="btn btn-ghost">Back</button>
+      </div>
+      <div id="health-del-confirm" class="del-confirm" style="display:none">
+        <p id="health-del-text">Delete this?</p>
+        <button id="health-del-yes" class="btn btn-sos" style="font-size:1.15rem;padding:14px;">Yes, delete it</button>
+        <button id="health-del-no" class="btn btn-ghost">Cancel</button>
+      </div>
+    </div>
+
+    <button id="health-back" class="btn btn-ghost">← Back to dashboard</button>
+    <footer>GUARDIAN by Global Research · Your health info never leaves this phone</footer>
+  </section>
+
+  <!-- MEDICATIONS SCREEN -->
+  <section id="screen-meds" class="screen">
+    <div class="card">
+      <h2>💊 My Medications</h2>
+      <p class="plain">This stays on your phone. Only you see it.</p>
+    </div>
+
+    <div class="card">
+      <h3>My medications</h3>
+      <div id="meds-list"></div>
+      <button id="btn-add-med" class="btn btn-primary" style="margin-top:6px">+ Add a medication</button>
+    </div>
+
+    <div class="card" id="med-form-card" style="display:none">
+      <h3 id="med-form-title">Add medication</h3>
+      <div class="field">
+        <label for="med-name">Medication name</label>
+        <input id="med-name" class="left" type="text" placeholder="Lipitor" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="med-dosage">Dosage</label>
+        <input id="med-dosage" class="left" type="text" placeholder="10mg" autocomplete="off">
+      </div>
+      <div class="field">
+        <label>Time of day — tap all that apply</label>
+        <div class="chips">
+          <button type="button" class="chip" data-t="morning">☀️ Morning</button>
+          <button type="button" class="chip" data-t="afternoon">🌤️ Afternoon</button>
+          <button type="button" class="chip" data-t="evening">🌙 Evening</button>
+          <button type="button" class="chip" data-t="bedtime">🛏️ Bedtime</button>
+        </div>
+      </div>
+      <div class="field">
+        <label for="med-time">Exact time (optional)</label>
+        <input id="med-time" class="left" type="text" placeholder="8:00 AM" autocomplete="off">
+      </div>
+      <div id="med-form-buttons">
+        <button id="med-save" class="btn btn-primary">Save</button>
+        <button id="med-delete" class="btn btn-danger" style="display:none">Delete</button>
+        <button id="med-cancel" class="btn btn-ghost">Back</button>
+      </div>
+      <div id="med-del-confirm" class="del-confirm" style="display:none">
+        <p id="med-del-text">Delete this medication?</p>
+        <button id="med-del-yes" class="btn btn-sos" style="font-size:1.15rem;padding:14px;">Yes, delete it</button>
+        <button id="med-del-no" class="btn btn-ghost">Cancel</button>
+      </div>
+    </div>
+
+    <button id="meds-back" class="btn btn-ghost">← Back to dashboard</button>
+    <footer>GUARDIAN by Global Research · Your medication info never leaves this phone</footer>
+  </section>
+
+  <!-- EMERGENCY TAG SCREEN -->
+  <section id="screen-emtag" class="screen">
+    <div class="emtag-header">
+      <h2>🚨 IN AN EMERGENCY —<br>SHOW THIS SCREEN</h2>
+    </div>
+
+    <div class="emtag-body">
+      <div class="emtag-section">
+        <div class="emtag-label">PATIENT</div>
+        <div class="emtag-big" id="emtag-name">—</div>
+        <div class="emtag-num">Guardian # <span id="emtag-number">—</span></div>
+      </div>
+      <div class="emtag-section alert">
+        <div class="emtag-label">⚠️ ALLERGIES — AVOID</div>
+        <div class="emtag-list" id="emtag-allergies">—</div>
+      </div>
+      <div class="emtag-section">
+        <div class="emtag-label">CONDITIONS</div>
+        <div class="emtag-list" id="emtag-conditions">—</div>
+      </div>
+      <div class="emtag-section">
+        <div class="emtag-label">MEDICATIONS</div>
+        <div class="emtag-list" id="emtag-meds">—</div>
+      </div>
+      <div class="emtag-section">
+        <div class="emtag-label">DOCTOR</div>
+        <div class="emtag-list" id="emtag-doctor">—</div>
+      </div>
+      <div class="emtag-section">
+        <div class="emtag-label">📞 EMERGENCY CONTACT — CALL</div>
+        <div class="emtag-list" id="emtag-ec">—</div>
+      </div>
+    </div>
+
+    <button id="btn-print-card" class="btn btn-primary">🖨️ Print my wallet card</button>
+    <div class="hint">Print, cut out, and keep it in your wallet — in case the phone is lost or broken.<br>
+    Meds or doctors changed? Reprint a fresh one any time — this button is always here.<br>
+    <span style="color:var(--yellow);font-weight:700;">Tip: laminate it for keeps.</span></div>
+    <button id="emtag-back" class="btn btn-ghost">← Back to dashboard</button>
+  </section>
+
+  <section id="screen-sos" class="screen">
+    <div class="emtag-header">
+      <h2>🆘 EMERGENCY ALERT</h2>
+    </div>
+
+    <!-- Step 1: confirm -->
+    <div id="sos-step-confirm" class="card" style="text-align:center;">
+      <h3 style="font-size:1.5rem;">Send emergency alert<br>to <span id="sos-guardian-name">your guardian</span>?</h3>
+      <p class="plain">This opens your text messages with your location and health info already written. You tap Send there.</p>
+      <button id="btn-sos-yes" class="btn btn-sos" style="font-size:1.4rem;padding:18px;">YES — SEND ALERT</button>
+      <button id="btn-sos-cancel" class="btn btn-ghost" style="font-size:1.2rem;">Cancel</button>
+    </div>
+
+    <!-- Step 1b: no contact saved yet -->
+    <div id="sos-step-setup" class="card" style="display:none;">
+      <h3 style="font-size:1.5rem;">Who should we alert?</h3>
+      <p class="plain">Add your guardian's name and phone number. This is who gets your emergency alert.</p>
+      <div class="field">
+        <label for="sos-ec-name">Name</label>
+        <input id="sos-ec-name" class="left" type="text" placeholder="Sarah (daughter)" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="sos-ec-phone">Phone number</label>
+        <input id="sos-ec-phone" class="left" type="tel" placeholder="516-555-0100" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="sos-ec-email">Email (optional)</label>
+        <input id="sos-ec-email" class="left" type="email" placeholder="For email alerts" autocomplete="off">
+      </div>
+      <button id="btn-sos-save-ec" class="btn btn-primary" style="font-size:1.2rem;">Save and continue</button>
+      <button id="btn-sos-setup-cancel" class="btn btn-ghost">Cancel</button>
+    </div>
+
+    <!-- Step 2: getting location -->
+    <div id="sos-step-locating" class="card" style="display:none;text-align:center;">
+      <h3 style="font-size:1.4rem;">Getting your location…</h3>
+      <p class="plain">One moment.</p>
+    </div>
+
+    <!-- Step 3: send -->
+    <div id="sos-step-send" class="card" style="display:none;text-align:center;">
+      <h3 style="font-size:1.4rem;">Ready to send</h3>
+      <p class="plain">To: <strong id="sos-send-to">—</strong><br>
+      <span id="sos-loc-note">Location included.</span></p>
+      <button id="btn-sos-text" class="btn btn-sos" style="font-size:1.4rem;padding:18px;">📱 SEND BY TEXT</button>
+      <button id="btn-sos-email" class="btn btn-primary" style="font-size:1.2rem;display:none;">✉️ Send by email instead</button>
+      <p class="plain" style="margin-top:10px;">This opens your messaging app with everything written.<br><strong>Tap Send there to finish.</strong></p>
+      <button id="btn-sos-done" class="btn btn-ghost">Done</button>
+    </div>
+
+    <button id="sos-back" class="btn btn-ghost">← Back to dashboard</button>
+  </section>
+
+</div>
+
+<!-- Wallet card render target: filled by JS only when printing. -->
+<div id="print-card" aria-hidden="true"></div>
+
+<script>
+(function () {
+  "use strict";
+  var LS_NUM = "guardian_number";
+  var LS_CODE = "guardian_access_code";
+  var LS_API = "guardian_api_base";
+  var LS_NAME = "guardian_customer_name";
+
+  var $ = function (id) { return document.getElementById(id); };
+  var screens = {
+    activate: $("screen-activate"),
+    dashboard: $("screen-dashboard"),
+    health: $("screen-health"),
+    meds: $("screen-meds"),
+    emtag: $("screen-emtag"),
+    sos: $("screen-sos")
+  };
+
+  function show(name) {
+    Object.keys(screens).forEach(function (k) {
+      screens[k].classList.toggle("active", k === name);
+    });
+    window.scrollTo(0, 0);
+  }
+  // Native-app default API base. The Android APK build replaces the
+  // __GUARDIAN_API_BASE__ placeholder below with the configured server URL.
+  // In the web prototype the placeholder is left as-is and ignored.
+  var GUARDIAN_API_DEFAULT = "__GUARDIAN_API_BASE__";
+  // App version, injected at APK build time by build-manual.sh (same
+  // placeholder technique as __GUARDIAN_API_BASE__). In the web prototype
+  // the placeholders stay literal: parseInt yields NaN -> 0, which means
+  // "unknown version" and the updater stays quiet.
+  var APP_VERSION_CODE = parseInt("__APP_VERSION_CODE__", 10) || 0;
+  var APP_VERSION = "__APP_VERSION__";
+  function appVersionLabel() {
+    return (APP_VERSION && APP_VERSION.slice(0, 2) !== "__") ? APP_VERSION : "";
+  }
+  // Where the app checks for new versions. Served by the Guardian server.
+  var UPDATE_CHECK_URL = "http://2.25.231.178:8897/version.json";
+  function apiBase() {
+    var v = (localStorage.getItem(LS_API) || "").trim().replace(/\/+$/, "");
+    if (!v && GUARDIAN_API_DEFAULT.slice(0, 2) !== "__") {
+      v = GUARDIAN_API_DEFAULT.replace(/\/+$/, "");
+    }
+    return v;
+  }
+  function showError(msg) {
+    var e = $("activate-error");
+    e.textContent = msg;
+    e.classList.add("show");
+  }
+  function clearError() {
+    $("activate-error").classList.remove("show");
+  }
+
+  // ---- Activation ----
+  $("btn-activate").addEventListener("click", function () {
+    clearError();
+    var num = $("in-number").value.replace(/\D/g, "");
+    var code = $("in-code").value.trim();
+    var typed = $("in-api").value.trim().replace(/\/+$/, "");
+    var api = typed || apiBase();
+    if (num.length !== 9) { showError("Guardian number must be 9 digits."); return; }
+    if (!code) { showError("Please enter your access code."); return; }
+    localStorage.setItem(LS_API, api);
+
+    var btn = $("btn-activate");
+    btn.disabled = true;
+    btn.textContent = "Checking…";
+
+    fetch(api + "/api/customer/" + encodeURIComponent(num))
+      .then(function (r) {
+        if (r.status === 404) throw new Error("notfound");
+        if (!r.ok) throw new Error("bad");
+        return r.json();
+      })
+      .then(function (data) {
+        // NOTE (prototype): the lookup endpoint confirms the Guardian number
+        // exists and returns the customer name. Full access-code verification
+        // needs a dedicated backend endpoint before production use.
+        localStorage.setItem(LS_NUM, num);
+        localStorage.setItem(LS_CODE, code);
+        if (data && data.name) localStorage.setItem(LS_NAME, data.name);
+        enterDashboard();
+      })
+      .catch(function (e) {
+        if (e.message === "notfound") showError("Guardian number not found. Check the number and try again.");
+        else showError("Could not reach the Guardian server. Check your connection and the API address.");
+      })
+      .finally(function () {
+        btn.disabled = false;
+        btn.textContent = "Activate Protection";
+      });
+  });
+  $("in-number").addEventListener("input", function () {
+    this.value = this.value.replace(/\D/g, "").slice(0, 9);
+  });
+
+  // ---- Dashboard ----
+  function enterDashboard() {
+    var num = localStorage.getItem(LS_NUM) || "";
+    var name = localStorage.getItem(LS_NAME) || "";
+    $("dash-number").textContent = num.replace(/(\d{3})(\d{3})(\d{3})/, "$1 $2 $3");
+    if (name) {
+      $("dash-name").textContent = "Guardian is watching over " + name.split(" ")[0];
+      $("guardian-avatar").textContent = name.trim().charAt(0).toUpperCase();
+    }
+    $("sos-confirm").classList.remove("show");
+    refreshTileStatus();
+    show("dashboard");
+    // Self-update check: once per app launch, silent unless an update exists.
+    if (!updateCheckDone) { updateCheckDone = true; checkForUpdates(false); }
+    var vl = appVersionLabel();
+    $("app-version").textContent = vl ? "Guardian version " + vl : "";
+  }
+
+  // ---- Self-updater ----
+  // The app checks version.json on the Guardian server. If a newer build
+  // exists, a gold banner offers a one-tap update: the native side downloads
+  // the APK with DownloadManager and fires the system installer, which
+  // installs it as an update (same app, same key) — all data is preserved.
+  var updateCheckDone = false;
+  var pendingUpdate = null;   // {versionCode, version, url}
+  var updateState = "idle";   // idle | available | permission | downloading
+
+  function setUpdateStatus(msg, good) {
+    var e = $("update-status");
+    e.textContent = msg || "";
+    e.classList.toggle("good", !!good);
+  }
+  function setBannerSub(msg) { $("update-banner-sub").textContent = msg || ""; }
+  function setUpdateBtn(label, enabled) {
+    var b = $("btn-update");
+    b.textContent = label;
+    b.disabled = !enabled;
+  }
+  function showUpdateBanner() {
+    var v = pendingUpdate && pendingUpdate.version ? " — " + pendingUpdate.version : "";
+    $("update-banner-title").textContent = "A newer Guardian is ready" + v + ".";
+    setBannerSub("");
+    setUpdateBtn("Update now", true);
+    $("update-banner").classList.add("show");
+    updateState = "available";
+  }
+  function hideUpdateBanner() {
+    $("update-banner").classList.remove("show");
+    pendingUpdate = null;
+    updateState = "idle";
+  }
+  function fetchWithTimeout(url, ms) {
+    return new Promise(function (resolve, reject) {
+      var timer = setTimeout(function () { reject(new Error("timeout")); }, ms);
+      fetch(url).then(function (r) { clearTimeout(timer); resolve(r); },
+                      function (e) { clearTimeout(timer); reject(e); });
+    });
+  }
+  function checkForUpdates(manual) {
+    if (!(APP_VERSION_CODE > 0)) {
+      if (manual) setUpdateStatus("This preview version can't check for updates.");
+      return;
+    }
+    if (manual) setUpdateStatus("Checking for updates…");
+    fetchWithTimeout(UPDATE_CHECK_URL, 5000).then(function (r) {
+      if (!r.ok) throw new Error("bad");
+      return r.json();
+    }).then(function (info) {
+      var remote = parseInt(info && info.versionCode, 10) || 0;
+      if (remote > APP_VERSION_CODE && info && info.url) {
+        pendingUpdate = {
+          versionCode: remote,
+          version: String(info.version || ("v" + remote)),
+          url: String(info.url)
+        };
+        showUpdateBanner();
+        if (manual) setUpdateStatus("A newer Guardian is ready — " + pendingUpdate.version + ".", true);
+      } else {
+        hideUpdateBanner();
+        if (manual) setUpdateStatus("You're up to date — this is the newest Guardian.", true);
+      }
+    }).catch(function () {
+      if (manual) setUpdateStatus("Couldn't check for updates. Check your internet and try again.");
+      // Automatic checks fail silently — no nagging.
+    });
+  }
+  // Events fired by the native side (GuardianUpdater bridge).
+  window.guardianUpdateEvent = function (type) {
+    if (type === "download_started") {
+      updateState = "downloading";
+      $("update-banner-title").textContent = "Downloading the update…";
+      setBannerSub("Keep this app open. Your phone will ask you to install the update when the download finishes.");
+      setUpdateBtn("Downloading…", false);
+    } else if (type === "needs_permission") {
+      showPermissionStep();
+    } else if (type === "download_failed") {
+      updateState = "available";
+      $("update-banner-title").textContent = "A newer Guardian is ready" +
+        (pendingUpdate && pendingUpdate.version ? " — " + pendingUpdate.version : "") + ".";
+      setBannerSub("The download didn't start. Check your internet and tap Update now to try again.");
+      setUpdateBtn("Update now", true);
+    }
+  };
+  function showPermissionStep() {
+    updateState = "permission";
+    $("update-banner-title").textContent = "One quick permission";
+    setBannerSub("Your phone needs your OK to install the update. Tap the button below, turn ON \u201cAllow from this source\u201d, then come back here and continue.");
+    setUpdateBtn("Open phone settings", true);
+  }
+  $("btn-update").addEventListener("click", function () {
+    if (updateState === "permission") {
+      // User is ready: open the phone settings, then wait for them to return.
+      try { GuardianUpdater.openInstallSettings(); } catch (e) {}
+      updateState = "permission2";
+      setUpdateBtn("I've turned it on \u2014 continue", true);
+      setBannerSub("Turn ON \u201cAllow from this source\u201d on the settings screen, then come back here and tap the button above.");
+      return;
+    }
+    if (updateState === "permission2") {
+      // User says they allowed it — verify, then update or explain again.
+      var ok = false;
+      try { ok = window.GuardianUpdater && GuardianUpdater.canInstall(); } catch (e) {}
+      if (ok && pendingUpdate) {
+        beginDownload();
+      } else {
+        showPermissionStep();
+      }
+      return;
+    }
+    if (!pendingUpdate) return;
+    if (!window.GuardianUpdater) {
+      // Plain browser (web prototype): just download the file.
+      window.open(pendingUpdate.url, "_blank");
+      return;
+    }
+    try {
+      if (GuardianUpdater.canInstall()) {
+        beginDownload();
+      } else {
+        showPermissionStep();
+      }
+    } catch (e) {
+      setBannerSub("Something went wrong. Try again, or download the new version from blanketguard.com/download.");
+    }
+  });
+  function beginDownload() {
+    updateState = "downloading";
+    $("update-banner-title").textContent = "Downloading the update…";
+    setBannerSub("Keep this app open. Your phone will ask you to install the update when the download finishes.");
+    setUpdateBtn("Downloading…", false);
+    try { GuardianUpdater.startUpdate(pendingUpdate.url); }
+    catch (e) {
+      updateState = "available";
+      setBannerSub("The download didn't start. Check your internet and tap Update now to try again.");
+      setUpdateBtn("Update now", true);
+    }
+  }
+  $("btn-check-updates").addEventListener("click", function () { checkForUpdates(true); });
+
+  // ---- SOS emergency alert ----
+  // Goes DIRECTLY from the phone to the guardian via SMS/email intents.
+  // Health data is never sent to any server — that is the whole point.
+  function ecHasContact() {
+    var ec = loadEC();
+    return !!(ec.name && (ec.phone || ec.email));
+  }
+  function sosShowStep(id) {
+    ["sos-step-confirm", "sos-step-setup", "sos-step-locating", "sos-step-send"].forEach(function (s) {
+      $(s).style.display = s === id ? "" : "none";
+    });
+  }
+  function openSOS() {
+    if (ecHasContact()) {
+      $("sos-guardian-name").textContent = loadEC().name;
+      sosShowStep("sos-step-confirm");
+    } else {
+      var d = loadEC();
+      $("sos-ec-name").value = d.name || "";
+      $("sos-ec-phone").value = d.phone || "";
+      $("sos-ec-email").value = d.email || "";
+      sosShowStep("sos-step-setup");
+    }
+    show("sos");
+  }
+  function sosGetLocation(done) {
+    function unavailable() { done("Location unavailable — call them now."); }
+    if (!navigator.geolocation) { unavailable(); return; }
+    var finished = false;
+    function fin(t) { if (!finished) { finished = true; done(t); } }
+    setTimeout(function () { fin("Location unavailable — call them now."); }, 9000);
+    navigator.geolocation.getCurrentPosition(
+      function (pos) {
+        fin("https://maps.google.com/?q=" +
+          pos.coords.latitude.toFixed(5) + "," + pos.coords.longitude.toFixed(5));
+      },
+      function () { fin("Location unavailable — call them now."); },
+      { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
+    );
+  }
+  // Compact SMS: name + location link + guardian # + allergies first,
+  // then conditions/meds/doctor only if they fit (~460 chars).
+  function buildSOSsms(locText) {
+    var p = patientName() || "a Guardian customer";
+    var num = (localStorage.getItem(LS_NUM) || "").replace(/(\d{3})(\d{3})(\d{3})/, "$1 $2 $3").trim();
+    var msg = "🚨 GUARDIAN EMERGENCY: " + p + " needs help! Location: " + locText;
+    if (num) msg += " Guardian #" + num + ".";
+    var allg = loadJSON(LS_ALLG, []);
+    if (allg.length) msg += " ⚠️ ALLERGIES: " + allg.map(function (a) {
+      return a.name + (a.reaction ? " (" + a.reaction + ")" : "");
+    }).join("; ");
+    var extra = [];
+    var conds = loadJSON(LS_COND, []);
+    if (conds.length) extra.push("Conditions: " + conds.map(function (c) { return c.name; }).join("; "));
+    var meds = loadJSON(LS_MED, []);
+    if (meds.length) extra.push("Meds: " + meds.map(function (m) {
+      var t = (m.times || []).map(function (x) { return TIME_LABEL[x] || x; }).join("/");
+      return m.name + (m.dosage ? " " + m.dosage : "") + (t ? " " + t : "");
+    }).join("; "));
+    var doc = loadDoctor();
+    if (doc.name || doc.contact) extra.push("Doctor: " + [doc.name, doc.contact].filter(Boolean).join(" "));
+    extra.forEach(function (e) {
+      if ((msg + " " + e).length <= 460) msg += " " + e;
+    });
+    return msg;
+  }
+  // Fuller version for email.
+  function buildSOSemail(locText) {
+    var p = patientName() || "a Guardian customer";
+    var num = (localStorage.getItem(LS_NUM) || "").replace(/(\d{3})(\d{3})(\d{3})/, "$1 $2 $3").trim();
+    var L = [];
+    L.push("🚨 GUARDIAN EMERGENCY ALERT");
+    L.push("");
+    L.push(p + " needs help right now.");
+    if (num) L.push("Guardian number: " + num);
+    L.push("Location: " + locText);
+    L.push("");
+    L.push(buildDoctorBody(false));
+    return L.join("\n");
+  }
+
+  var sosLocText = "";
+  $("btn-sos").addEventListener("click", function () {
+    if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+    openSOS();
+  });
+  $("btn-sos-cancel").addEventListener("click", function () { show("dashboard"); });
+  $("btn-sos-setup-cancel").addEventListener("click", function () { show("dashboard"); });
+  $("sos-back").addEventListener("click", function () { show("dashboard"); });
+  $("btn-sos-done").addEventListener("click", function () { show("dashboard"); });
+  $("btn-sos-save-ec").addEventListener("click", function () {
+    var name = $("sos-ec-name").value.trim();
+    var phone = $("sos-ec-phone").value.trim();
+    var email = $("sos-ec-email").value.trim();
+    if (!name) { $("sos-ec-name").focus(); return; }
+    if (!phone && !email) { $("sos-ec-phone").focus(); return; }
+    saveJSON(LS_EC, { name: name, phone: phone, email: email });
+    renderEC();
+    openSOS(); // now has a contact → confirm step
+  });
+  $("btn-sos-yes").addEventListener("click", function () {
+    sosShowStep("sos-step-locating");
+    sosGetLocation(function (loc) {
+      sosLocText = loc;
+      var ec = loadEC();
+      $("sos-send-to").textContent = ec.name + (ec.phone ? " (" + ec.phone + ")" : ec.email ? " (" + ec.email + ")" : "");
+      $("sos-loc-note").textContent = loc.indexOf("http") === 0 ? "Location included." : loc;
+      $("btn-sos-text").style.display = ec.phone ? "" : "none";
+      $("btn-sos-email").style.display = ec.email ? "" : "none";
+      sosShowStep("sos-step-send");
+      if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+    });
+  });
+  $("btn-sos-text").addEventListener("click", function () {
+    var ec = loadEC();
+    var target = (ec.phone || "").replace(/[^\d+]/g, "");
+    window.location.href = "sms:" + target + "?body=" + encodeURIComponent(buildSOSsms(sosLocText));
+  });
+  $("btn-sos-email").addEventListener("click", function () {
+    var ec = loadEC();
+    var p = patientName() || "Guardian customer";
+    window.location.href = "mailto:" + ec.email +
+      "?subject=" + encodeURIComponent("🚨 GUARDIAN EMERGENCY: " + p + " needs help") +
+      "&body=" + encodeURIComponent(buildSOSemail(sosLocText));
+  });
+
+  $("tile-gps").addEventListener("click", function () {
+    var s = $("gps-status");
+    if (!navigator.geolocation) { s.textContent = "Not supported on this device"; return; }
+    s.textContent = "Locating…";
+    navigator.geolocation.getCurrentPosition(
+      function (pos) {
+        s.textContent = pos.coords.latitude.toFixed(5) + ", " + pos.coords.longitude.toFixed(5);
+      },
+      function () { s.textContent = "Location unavailable — check permission"; },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  });
+
+  $("tile-scam").addEventListener("click", function () {
+    alert("Scam Call Blocking is ON.\n\nKnown scam numbers are screened before your phone rings. (Prototype — full on-device screening ships with the native app.)");
+  });
+  // ---- Health info & Medications (stored on this device only, never sent anywhere) ----
+  var LS_COND = "guardian_health_conditions";
+  var LS_ALLG = "guardian_allergies";
+  var LS_MED = "guardian_meds";
+  var LS_DOCTOR = "guardian_doctor";
+  var LS_EC = "guardian_emergency_contact";
+
+  function loadJSON(key, fb) {
+    try { var v = localStorage.getItem(key); return v ? JSON.parse(v) : fb; }
+    catch (e) { return fb; }
+  }
+  function saveJSON(key, v) { localStorage.setItem(key, JSON.stringify(v)); }
+  function uid() { return "x" + Date.now().toString(36) + Math.floor(Math.random() * 46656).toString(36); }
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  // ----- Conditions & allergies -----
+  var healthForm = { kind: "condition", id: null };
+
+  function renderHealth() {
+    renderSimpleList($("conditions-list"), loadJSON(LS_COND, []), "condition", "No conditions added yet.");
+    renderSimpleList($("allergies-list"), loadJSON(LS_ALLG, []), "allergy", "No allergies added yet.");
+    renderDoctor();
+  }
+  function renderSimpleList(el, list, kind, emptyText) {
+    if (!list.length) { el.innerHTML = '<div class="empty">' + emptyText + '</div>'; return; }
+    el.innerHTML = list.map(function (r) {
+      var sub = kind === "condition" ? r.note : r.reaction;
+      return '<div class="item" data-id="' + r.id + '">' +
+        '<div class="n">' + esc(r.name) + '</div>' +
+        (sub ? '<div class="d">' + esc(sub) + '</div>' : '') + '</div>';
+    }).join("");
+    var nodes = el.querySelectorAll(".item");
+    for (var i = 0; i < nodes.length; i++) {
+      (function (n) {
+        n.addEventListener("click", function () { openHealthForm(kind, n.getAttribute("data-id")); });
+      })(nodes[i]);
+    }
+  }
+
+  function openHealthForm(kind, id) {
+    healthForm.kind = kind;
+    healthForm.id = id || null;
+    var list = loadJSON(kind === "condition" ? LS_COND : LS_ALLG, []);
+    var rec = null;
+    for (var i = 0; i < list.length; i++) if (list[i].id === id) rec = list[i];
+    $("health-form-title").textContent = (id ? "Edit " : "Add ") + (kind === "condition" ? "condition" : "allergy");
+    $("health-name-label").textContent = kind === "condition" ? "Condition name" : "Allergy name";
+    $("health-name").placeholder = kind === "condition" ? "High blood pressure" : "Penicillin";
+    $("health-note-label").textContent = kind === "condition" ? "Note (optional)" : "What happens (optional)";
+    $("health-note").placeholder = kind === "condition" ? "Optional" : "Rash";
+    $("health-name").value = rec ? rec.name : "";
+    $("health-note").value = rec ? (rec.note || rec.reaction || "") : "";
+    $("health-delete").style.display = id ? "block" : "none";
+    $("health-del-confirm").style.display = "none";
+    $("health-form-buttons").style.display = "block";
+    $("health-form-card").style.display = "block";
+    $("health-form-card").scrollIntoView();
+  }
+  function closeHealthForm() {
+    $("health-form-card").style.display = "none";
+    healthForm.id = null;
+  }
+
+  $("btn-add-condition").addEventListener("click", function () { openHealthForm("condition", null); });
+  $("btn-add-allergy").addEventListener("click", function () { openHealthForm("allergy", null); });
+  $("health-cancel").addEventListener("click", closeHealthForm);
+
+  $("health-save").addEventListener("click", function () {
+    var name = $("health-name").value.trim();
+    if (!name) { $("health-name").focus(); return; }
+    var note = $("health-note").value.trim();
+    var key = healthForm.kind === "condition" ? LS_COND : LS_ALLG;
+    var list = loadJSON(key, []);
+    if (healthForm.id) {
+      for (var i = 0; i < list.length; i++) {
+        if (list[i].id === healthForm.id) {
+          list[i].name = name;
+          if (healthForm.kind === "condition") list[i].note = note; else list[i].reaction = note;
+        }
+      }
+    } else {
+      var rec = { id: uid(), name: name };
+      if (healthForm.kind === "condition") rec.note = note; else rec.reaction = note;
+      list.push(rec);
+    }
+    saveJSON(key, list);
+    closeHealthForm();
+    renderHealth();
+    refreshTileStatus();
+  });
+
+  $("health-delete").addEventListener("click", function () {
+    var list = loadJSON(healthForm.kind === "condition" ? LS_COND : LS_ALLG, []);
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].id === healthForm.id) $("health-del-text").textContent = 'Delete "' + list[i].name + '"?';
+    }
+    $("health-form-buttons").style.display = "none";
+    $("health-del-confirm").style.display = "block";
+  });
+  $("health-del-no").addEventListener("click", function () {
+    $("health-del-confirm").style.display = "none";
+    $("health-form-buttons").style.display = "block";
+  });
+  $("health-del-yes").addEventListener("click", function () {
+    var key = healthForm.kind === "condition" ? LS_COND : LS_ALLG;
+    var list = loadJSON(key, []);
+    var out = [];
+    for (var i = 0; i < list.length; i++) if (list[i].id !== healthForm.id) out.push(list[i]);
+    saveJSON(key, out);
+    closeHealthForm();
+    renderHealth();
+    refreshTileStatus();
+  });
+
+  // ----- My doctor & one-tap sharing -----
+  function loadDoctor() {
+    var d = loadJSON(LS_DOCTOR, null);
+    return d && typeof d === "object" ? d : { name: "", contact: "" };
+  }
+  function renderDoctor() {
+    var d = loadDoctor();
+    $("doc-name").value = d.name || "";
+    $("doc-contact").value = d.contact || "";
+    $("doctor-saved").style.display = "none";
+    $("doctor-hint").classList.remove("show");
+  }
+  $("btn-save-doctor").addEventListener("click", function () {
+    saveJSON(LS_DOCTOR, {
+      name: $("doc-name").value.trim(),
+      contact: $("doc-contact").value.trim()
+    });
+    $("doctor-saved").style.display = "block";
+  });
+
+  function patientName() {
+    return (localStorage.getItem(LS_NAME) || "").trim();
+  }
+  // Full version for email, short version for SMS.
+  function buildDoctorBody(short) {
+    var p = patientName();
+    var who = p || "your patient";
+    var conds = loadJSON(LS_COND, []);
+    var allg = loadJSON(LS_ALLG, []);
+    var meds = loadJSON(LS_MED, []);
+    if (short) {
+      var parts = ["Health info for " + who + ":"];
+      parts.push("Conditions: " + (conds.length
+        ? conds.map(function (c) { return c.name + (c.note ? " (" + c.note + ")" : ""); }).join("; ")
+        : "none"));
+      parts.push("Allergies: " + (allg.length
+        ? allg.map(function (a) { return a.name + (a.reaction ? " (" + a.reaction + ")" : ""); }).join("; ")
+        : "none"));
+      parts.push("Meds: " + (meds.length
+        ? meds.map(function (m) {
+            var t = (m.times || []).map(function (x) { return TIME_LABEL[x] || x; }).join("/");
+            return m.name + (m.dosage ? " " + m.dosage : "") + (t ? " " + t : "");
+          }).join("; ")
+        : "none"));
+      return parts.join(" ");
+    }
+    var L = [];
+    L.push("Hello Doctor, please keep this on file for " + who + ".");
+    L.push("");
+    L.push("CONDITIONS:");
+    if (conds.length) conds.forEach(function (c) { L.push("- " + c.name + (c.note ? " (" + c.note + ")" : "")); });
+    else L.push("- None listed");
+    L.push("");
+    L.push("ALLERGIES:");
+    if (allg.length) allg.forEach(function (a) { L.push("- " + a.name + (a.reaction ? " — " + a.reaction : "")); });
+    else L.push("- None listed");
+    L.push("");
+    L.push("MEDICATIONS:");
+    if (meds.length) meds.forEach(function (m) {
+      var t = (m.times || []).map(function (x) { return TIME_LABEL[x] || x; }).join(", ");
+      var line = "- " + m.name;
+      if (m.dosage) line += ", " + m.dosage;
+      if (t) line += " — " + t;
+      if (m.exactTime) line += " (" + m.exactTime + ")";
+      L.push(line);
+    });
+    else L.push("- None listed");
+    L.push("");
+    L.push("Sent from THE BLANKET Guardian app.");
+    return L.join("\n");
+  }
+
+  function needDoctorContact() {
+    var hint = $("doctor-hint");
+    hint.textContent = "Add your doctor's email or phone number above first, then tap send.";
+    hint.classList.add("show");
+    $("doc-contact").focus();
+    $("doc-contact").scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
+  $("btn-send-doctor").addEventListener("click", function () {
+    var doc = loadDoctor();
+    if (!doc.contact) { needDoctorContact(); return; }
+    $("doctor-hint").classList.remove("show");
+    var subject = "Health info for " + (patientName() || "your patient");
+    if (doc.contact.indexOf("@") !== -1) {
+      // Email address → open the email app with everything pre-filled.
+      window.location.href = "mailto:" + doc.contact +
+        "?subject=" + encodeURIComponent(subject) +
+        "&body=" + encodeURIComponent(buildDoctorBody(false));
+    } else {
+      // Phone number → SMS fallback with the short version.
+      window.location.href = "sms:" + doc.contact +
+        "?body=" + encodeURIComponent(buildDoctorBody(true));
+    }
+  });
+  $("btn-send-doctor-sms").addEventListener("click", function () {
+    // Manual fallback: text the short version (pick the recipient in the SMS app).
+    window.location.href = "sms:?body=" + encodeURIComponent(buildDoctorBody(true));
+  });
+
+  // ----- Emergency contact -----
+  function loadEC() {
+    var d = loadJSON(LS_EC, null);
+    return d && typeof d === "object" ? d : { name: "", phone: "", email: "" };
+  }
+  function renderEC() {
+    var d = loadEC();
+    $("ec-name").value = d.name || "";
+    $("ec-phone").value = d.phone || "";
+    $("ec-email").value = d.email || "";
+    $("ec-saved").style.display = "none";
+  }
+  $("btn-save-ec").addEventListener("click", function () {
+    saveJSON(LS_EC, {
+      name: $("ec-name").value.trim(),
+      phone: $("ec-phone").value.trim(),
+      email: $("ec-email").value.trim()
+    });
+    $("ec-saved").style.display = "block";
+  });
+
+  // ----- Emergency Tag (for paramedics) -----
+  function contactLink(contact) {
+    var c = String(contact || "").trim();
+    if (!c) return "";
+    if (c.indexOf("@") !== -1) return '<a href="mailto:' + esc(c) + '">' + esc(c) + "</a>";
+    return '<a href="tel:' + esc(c.replace(/[^\d+]/g, "")) + '">' + esc(c) + "</a>";
+  }
+  function renderEmtag() {
+    var p = patientName();
+    $("emtag-name").textContent = p || "—";
+    var num = localStorage.getItem(LS_NUM) || "";
+    $("emtag-number").textContent = num.replace(/(\d{3})(\d{3})(\d{3})/, "$1 $2 $3") || "—";
+
+    var conds = loadJSON(LS_COND, []);
+    $("emtag-conditions").innerHTML = conds.length
+      ? conds.map(function (c) { return esc(c.name) + (c.note ? " (" + esc(c.note) + ")" : ""); }).join("<br>")
+      : "None listed";
+
+    var allg = loadJSON(LS_ALLG, []);
+    $("emtag-allergies").innerHTML = allg.length
+      ? allg.map(function (a) { return esc(a.name) + (a.reaction ? " — " + esc(a.reaction) : ""); }).join("<br>")
+      : "None listed";
+
+    var meds = loadJSON(LS_MED, []);
+    meds.sort(function (a, b) {
+      var d = medSortKey(a) - medSortKey(b);
+      return d || String(a.name).localeCompare(String(b.name));
+    });
+    $("emtag-meds").innerHTML = meds.length
+      ? meds.map(function (m) {
+          var t = (m.times || []).map(function (x) { return TIME_LABEL[x] || x; }).join(", ");
+          var line = esc(m.name);
+          if (m.dosage) line += ", " + esc(m.dosage);
+          if (t) line += " — " + esc(t);
+          if (m.exactTime) line += " (" + esc(m.exactTime) + ")";
+          return line;
+        }).join("<br>")
+      : "None listed";
+
+    var doc = loadDoctor();
+    var dBits = [];
+    if (doc.name) dBits.push(esc(doc.name));
+    if (doc.contact) dBits.push(contactLink(doc.contact));
+    $("emtag-doctor").innerHTML = dBits.length ? dBits.join("<br>") : "None listed";
+
+    var ec = loadEC();
+    var eBits = [];
+    if (ec.name) eBits.push(esc(ec.name));
+    if (ec.phone) eBits.push(contactLink(ec.phone));
+    $("emtag-ec").innerHTML = eBits.length ? eBits.join("<br>") : "None listed";
+  }
+
+  $("tile-emtag").addEventListener("click", function () {
+    renderEmtag();
+    show("emtag");
+  });
+  $("emtag-back").addEventListener("click", function () { show("dashboard"); });
+
+  // ----- Printable wallet card (credit-card size, black on white) -----
+  function renderWalletCard() {
+    var p = patientName();
+    var num = (localStorage.getItem(LS_NUM) || "").replace(/(\d{3})(\d{3})(\d{3})/, "$1 $2 $3");
+    var allg = loadJSON(LS_ALLG, []);
+    var conds = loadJSON(LS_COND, []);
+    var meds = loadJSON(LS_MED, []);
+    meds.sort(function (a, b) {
+      var d = medSortKey(a) - medSortKey(b);
+      return d || String(a.name).localeCompare(String(b.name));
+    });
+    var doc = loadDoctor();
+    var ec = loadEC();
+
+    function lines(list, fmt) {
+      return list.length ? list.map(fmt).join("<br>") : "None listed";
+    }
+    var docLine = ((doc.name ? esc(doc.name) : "") + (doc.contact ? " · " + esc(doc.contact) : "")) || "None listed";
+    var ecLine = ((ec.name ? esc(ec.name) : "") + (ec.phone ? " · " + esc(ec.phone) : "")) || "None listed";
+
+    var html =
+      '<div class="wcard front">' +
+        '<div class="wc-header">GUARDIAN EMERGENCY</div>' +
+        '<div class="wc-name">' + esc(p || "—") + "</div>" +
+        '<div class="wc-number">' + esc(num || "—") + "</div>" +
+        '<div class="wc-carry">CARRY THIS CARD AT ALL TIMES.</div>' +
+        '<div class="wc-allg-label">ALLERGIES — AVOID</div>' +
+        '<div class="wc-allg">' + lines(allg, function (a) {
+          return esc(a.name) + (a.reaction ? " — " + esc(a.reaction) : "");
+        }) + "</div>" +
+      "</div>" +
+      '<div class="wcard back">' +
+        '<div class="wc-backhead">' + esc(p || "—") + " · Guardian # " + esc(num || "—") + "</div>" +
+        '<div class="wc-sec"><div class="wc-sec-label">CONDITIONS</div><div class="wc-sec-body">' +
+          lines(conds, function (c) { return esc(c.name) + (c.note ? " (" + esc(c.note) + ")" : ""); }) + "</div></div>" +
+        '<div class="wc-sec"><div class="wc-sec-label">MEDICATIONS</div><div class="wc-sec-body">' +
+          lines(meds, function (m) {
+            var t = (m.times || []).map(function (x) { return TIME_LABEL[x] || x; }).join(", ");
+            var s = esc(m.name);
+            if (m.dosage) s += " " + esc(m.dosage);
+            if (t) s += " — " + esc(t);
+            if (m.exactTime) s += " (" + esc(m.exactTime) + ")";
+            return s;
+          }) + "</div></div>" +
+        '<div class="wc-sec"><div class="wc-sec-label">DOCTOR</div><div class="wc-sec-body">' + docLine + "</div></div>" +
+        '<div class="wc-sec"><div class="wc-sec-label">EMERGENCY CONTACT</div><div class="wc-sec-body">' + ecLine + "</div></div>" +
+      "</div>";
+    $("print-card").innerHTML = html;
+  }
+
+  $("btn-print-card").addEventListener("click", function () {
+    renderWalletCard();
+    if (window.GuardianPrint && typeof window.GuardianPrint.printCard === "function") {
+      // Inside the native app: window.print() does nothing in a WebView, so
+      // hand the card to Android's print framework instead.
+      var css = $("wcard-css").textContent;
+      var docHtml = '<!DOCTYPE html><html><head><meta charset="utf-8"><style>' + css +
+        "</style></head><body>" + $("print-card").innerHTML + "</body></html>";
+      window.GuardianPrint.printCard(docHtml);
+    } else {
+      // Plain browser: the print stylesheet shows only the card.
+      window.print();
+    }
+  });
+
+  // ----- Medications -----
+  var TIME_LABEL = { morning: "Morning", afternoon: "Afternoon", evening: "Evening", bedtime: "Bedtime" };
+  var TIME_ORDER = { morning: 0, afternoon: 1, evening: 2, bedtime: 3 };
+  var medForm = { id: null, times: [] };
+
+  function medSortKey(m) {
+    var k = 99;
+    (m.times || []).forEach(function (t) { if (TIME_ORDER[t] < k) k = TIME_ORDER[t]; });
+    return k;
+  }
+  function renderMeds() {
+    var list = loadJSON(LS_MED, []);
+    list.sort(function (a, b) {
+      var d = medSortKey(a) - medSortKey(b);
+      return d || String(a.name).localeCompare(String(b.name));
+    });
+    var el = $("meds-list");
+    if (!list.length) { el.innerHTML = '<div class="empty">No medications added yet.</div>'; return; }
+    el.innerHTML = list.map(function (m) {
+      var times = (m.times || []).map(function (t) { return TIME_LABEL[t] || t; }).join(", ");
+      var sub = [];
+      if (m.dosage) sub.push(esc(m.dosage));
+      if (m.exactTime) sub.push(esc(m.exactTime));
+      return '<div class="item" data-id="' + m.id + '">' +
+        '<div class="n">' + esc(m.name) + '</div>' +
+        (sub.length ? '<div class="d">' + sub.join(" · ") + '</div>' : '') +
+        (times ? '<div class="t">' + esc(times) + '</div>' : '') + '</div>';
+    }).join("");
+    var nodes = el.querySelectorAll(".item");
+    for (var i = 0; i < nodes.length; i++) {
+      (function (n) {
+        n.addEventListener("click", function () { openMedForm(n.getAttribute("data-id")); });
+      })(nodes[i]);
+    }
+  }
+
+  function paintChips() {
+    var nodes = document.querySelectorAll("#med-form-card .chip");
+    for (var i = 0; i < nodes.length; i++) {
+      nodes[i].classList.toggle("sel", medForm.times.indexOf(nodes[i].getAttribute("data-t")) !== -1);
+    }
+  }
+
+  function openMedForm(id) {
+    medForm.id = id || null;
+    var list = loadJSON(LS_MED, []);
+    var rec = null;
+    for (var i = 0; i < list.length; i++) if (list[i].id === id) rec = list[i];
+    $("med-form-title").textContent = id ? "Edit medication" : "Add medication";
+    $("med-name").value = rec ? rec.name : "";
+    $("med-dosage").value = rec ? (rec.dosage || "") : "";
+    $("med-time").value = rec ? (rec.exactTime || "") : "";
+    medForm.times = rec && rec.times ? rec.times.slice() : [];
+    paintChips();
+    $("med-delete").style.display = id ? "block" : "none";
+    $("med-del-confirm").style.display = "none";
+    $("med-form-buttons").style.display = "block";
+    $("med-form-card").style.display = "block";
+    $("med-form-card").scrollIntoView();
+  }
+  function closeMedForm() {
+    $("med-form-card").style.display = "none";
+    medForm.id = null;
+    medForm.times = [];
+  }
+
+  $("btn-add-med").addEventListener("click", function () { openMedForm(null); });
+  $("med-cancel").addEventListener("click", closeMedForm);
+
+  (function bindChips() {
+    var nodes = document.querySelectorAll("#med-form-card .chip");
+    for (var i = 0; i < nodes.length; i++) {
+      nodes[i].addEventListener("click", function () {
+        var t = this.getAttribute("data-t");
+        var ix = medForm.times.indexOf(t);
+        if (ix === -1) medForm.times.push(t); else medForm.times.splice(ix, 1);
+        paintChips();
+      });
+    }
+  })();
+
+  $("med-save").addEventListener("click", function () {
+    var name = $("med-name").value.trim();
+    if (!name) { $("med-name").focus(); return; }
+    var list = loadJSON(LS_MED, []);
+    var rec = {
+      name: name,
+      dosage: $("med-dosage").value.trim(),
+      exactTime: $("med-time").value.trim(),
+      times: medForm.times.slice()
+    };
+    if (medForm.id) {
+      for (var i = 0; i < list.length; i++) if (list[i].id === medForm.id) {
+        rec.id = medForm.id;
+        list[i] = rec;
+      }
+    } else {
+      rec.id = uid();
+      list.push(rec);
+    }
+    saveJSON(LS_MED, list);
+    closeMedForm();
+    renderMeds();
+    refreshTileStatus();
+  });
+
+  $("med-delete").addEventListener("click", function () {
+    var list = loadJSON(LS_MED, []);
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].id === medForm.id) $("med-del-text").textContent = 'Delete "' + list[i].name + '"?';
+    }
+    $("med-form-buttons").style.display = "none";
+    $("med-del-confirm").style.display = "block";
+  });
+  $("med-del-no").addEventListener("click", function () {
+    $("med-del-confirm").style.display = "none";
+    $("med-form-buttons").style.display = "block";
+  });
+  $("med-del-yes").addEventListener("click", function () {
+    var list = loadJSON(LS_MED, []);
+    var out = [];
+    for (var i = 0; i < list.length; i++) if (list[i].id !== medForm.id) out.push(list[i]);
+    saveJSON(LS_MED, out);
+    closeMedForm();
+    renderMeds();
+    refreshTileStatus();
+  });
+
+  // ----- Tile navigation & status -----
+  function refreshTileStatus() {
+    var c = loadJSON(LS_COND, []).length;
+    var a = loadJSON(LS_ALLG, []).length;
+    var m = loadJSON(LS_MED, []).length;
+    $("health-status").textContent = (c + a)
+      ? c + " condition" + (c === 1 ? "" : "s") + " · " + a + " allerg" + (a === 1 ? "y" : "ies")
+      : "Tap to add info";
+    $("meds-status").textContent = m
+      ? m + " medication" + (m === 1 ? "" : "s")
+      : "Tap to add info";
+  }
+
+  $("tile-health").addEventListener("click", function () {
+    renderHealth();
+    show("health");
+  });
+  $("tile-meds").addEventListener("click", function () {
+    renderMeds();
+    show("meds");
+  });
+  $("health-back").addEventListener("click", function () { closeHealthForm(); refreshTileStatus(); show("dashboard"); });
+  $("meds-back").addEventListener("click", function () { closeMedForm(); refreshTileStatus(); show("dashboard"); });
+
+  $("btn-signout").addEventListener("click", function () {
+    if (confirm("Sign out of Guardian on this device?")) {
+      localStorage.removeItem(LS_NUM);
+      localStorage.removeItem(LS_CODE);
+      localStorage.removeItem(LS_NAME);
+      show("activate");
+    }
+  });
+
+  // ---- Init ----
+  // Show the saved override, else the injected build default (so the field
+  // is never blank inside the app even though the build injects the URL).
+  $("in-api").value = apiBase();
+  if (localStorage.getItem(LS_NUM) && localStorage.getItem(LS_CODE)) {
+    enterDashboard();
+  } else {
+    show("activate");
+  }
+
+  // Register service worker
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("sw.js").catch(function () { /* offline support optional */ });
+    });
+  }
+})();
+</script>
+</body>
+</html>
